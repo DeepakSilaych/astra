@@ -1,72 +1,36 @@
-# Virtual Jewelry Try-On App
-
-A Next.js web application for virtual jewelry try-on using AI models. Upload reference images, provide a prompt, and generate high-quality virtual try-on images.
-
-## Features
-
-- **Multi-image Upload**: Upload multiple reference images with preview
-- **AI-Powered Analysis**: Uses OpenAI to analyze requests and determine processing needs
-- **Image Generation**: Integrates with Fal AI for high-quality image generation
-- **Real-time Feedback**: Shows processing status and error handling
-- **Queue System**: MongoDB-backed queue for parallel job processing
-- **Pixel-to-mm Scaling**: Accurate scaling using Sharp and facial/body proportions
-
-## Environment Setup
-
-Create a `.env.local` file with the following variables:
-
-```bash
-OPENAI_API_KEY=your_openai_api_key
-FAL_KEY=your_fal_ai_api_key
-REPLICATE_API_KEY=your_replicate_api_key
-MONGODB_URI=your_mongodb_connection_string
-```
-
-## Fal AI Migration
-
-⚠️ **Important**: This app uses the new `@fal-ai/client` package. The old `@fal-ai/serverless-client` is deprecated.
-
-See [FAL_AI_SETUP.md](./FAL_AI_SETUP.md) for detailed setup instructions.
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-1. Install dependencies:
+First, run the development server:
 
 ```bash
-pnpm install
-```
-
-2. Set up environment variables in `.env.local`
-
-3. Run the development server:
-
-```bash
+npm run dev
+# or
+yarn dev
+# or
 pnpm dev
+# or
+bun dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) to access the app
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## API Endpoints
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- `POST /api/upload` - Upload images to external service
-- `POST /api/process` - Process jewelry try-on requests
-- `POST /api/queue` - Create and manage job queues
-- `POST /api/submit-job` - Submit jobs via form
-- `GET /api/sessions` - Manage user sessions
-- `GET /api/health` - Health check for the app
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Tech Stack
+## Learn More
 
-- **Frontend**: Next.js 15, React, TypeScript, Tailwind CSS
-- **Backend**: Node.js, MongoDB
-- **AI Services**: OpenAI GPT-4, Fal AI (Flux models), Replicate API
-- **Deployment**: Vercel-ready
+To learn more about Next.js, take a look at the following resources:
 
-## Production Notes
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-- All test/dev files removed; only production code remains
-- Modularized backend utilities for AI/model steps
-- Generalized prompts for all jewelry categories
-- MongoDB-backed queue supports 50+ parallel jobs
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
