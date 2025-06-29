@@ -13,17 +13,6 @@ fal.config({
   proxyUrl: "/api/fal/proxy",
 });
 
-const LORAS = [
-  {
-    path: "https://huggingface.co/latent-consistency/lcm-lora-sdxl/resolve/main/pytorch_lora_weights.safetensors",
-    scale: 0.8,
-  },
-  {
-    path: "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_offset_example-lora_1.0.safetensors",
-    scale: 0.15,
-  },
-];
-
 export async function generateFinalImage({
   modelImageUrl,
   jewelryImageUrl,

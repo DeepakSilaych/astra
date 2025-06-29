@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createJob } from "@/lib/queue";
-import { writeFile } from "fs/promises";
+import { jobQueue } from "@/utils/queue";
+import { nanoid } from "nanoid";
+import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
+import { existsSync } from "fs";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,36 +20,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Ensure uploads directory exists
+    const uploadsDir = join(process.cwd(), "public", "uploads");
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true });
+    }
+
     // Save files
     const jewelryImageBuffer = Buffer.from(await jewelryImage.arrayBuffer());
-    const jewelryImagePath = join(
-      process.cwd(),
-      "public",
-      "uploads",
-      jewelryImage.name
-    );
+    const jewelryImagePath = join(uploadsDir, jewelryImage.name);
     await writeFile(jewelryImagePath, jewelryImageBuffer);
 
     let modelImagePath: string | undefined;
     if (modelImage) {
       const modelImageBuffer = Buffer.from(await modelImage.arrayBuffer());
-      modelImagePath = join(
-        process.cwd(),
-        "public",
-        "uploads",
-        modelImage.name
-      );
+      modelImagePath = join(uploadsDir, modelImage.name);
       await writeFile(modelImagePath, modelImageBuffer);
     }
 
-    const job = createJob({
-      jewelryImagePath,
-      modelImagePath,
-      prompt: prompt ?? undefined,
-      sizing,
+    // Create job using MongoDB queue
+    const jobId = nanoid();
+    await jobQueue.add(jobId, {
+      description: prompt || "Virtual jewelry try-on",
+      jewelryImage: `/uploads/${jewelryImage.name}`,
+      modelImage: modelImage ? `/uploads/${modelImage.name}` : undefined,
+      sizing: parseInt(sizing),
+      type: "jewelry",
     });
 
-    return NextResponse.json({ success: true, jobId: job.id });
+    return NextResponse.json({ success: true, jobId });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

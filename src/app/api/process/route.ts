@@ -69,7 +69,9 @@ export async function POST(req: NextRequest) {
       console.log("Model generation required");
 
       const modelResult = await generateModelImage(
-        analysis.suggestedModelPrompt
+        analysis.suggestedModelPrompt,
+        analysis.jewelryCategory,
+        prompt // Pass user's original request as context
       );
 
       if (!modelResult.success) {
@@ -102,7 +104,9 @@ export async function POST(req: NextRequest) {
       console.log("Jewelry generation required");
 
       const jewelryResult = await generateJewelryImage(
-        analysis.suggestedJewelryPrompt
+        analysis.suggestedJewelryPrompt,
+        analysis.jewelryCategory,
+        prompt // Pass user's original request as context
       );
 
       if (!jewelryResult.success) {

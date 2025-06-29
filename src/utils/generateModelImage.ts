@@ -12,41 +12,78 @@ export interface GenerationResult {
 }
 
 /**
- * Generates a model/person image using Fal AI
+ * Generates a model/person image using Fal AI with context-aware prompting
  */
 export async function generateModelImage(
-  prompt: string
+  prompt: string,
+  jewelryCategory?: string,
+  userContext?: string
 ): Promise<GenerationResult> {
   console.log("Generating model image with Fal AI...");
   console.log("Model prompt:", prompt);
+  console.log("Jewelry category:", jewelryCategory);
+  console.log("User context:", userContext);
+
+  // Build category-specific positioning requirements
+  let positioningRequirements = "";
+  switch (jewelryCategory) {
+    case "rings":
+      positioningRequirements = "Hands prominently displayed with elegant finger positioning, palms visible or gracefully posed, nail beds clean and well-manicured, fingers naturally separated to showcase ring placement areas";
+      break;
+    case "necklaces":
+      positioningRequirements = "Upper body and neck area clearly visible, décolletage well-lit, appropriate neckline for jewelry layering, shoulders positioned to frame the neck area naturally";
+      break;
+    case "earrings":
+      positioningRequirements = "Face and ear areas clearly visible, hair styled to expose ears completely, head positioned to show ear shape and lobe clearly, profile and front angles optimized";
+      break;
+    case "bracelets":
+    case "watches":
+      positioningRequirements = "Wrists and forearms clearly visible, arms positioned naturally with wrist areas prominently displayed, hands relaxed and elegant, sleeves appropriate for wrist exposure";
+      break;
+    case "pendants":
+      positioningRequirements = "Chest area visible with clear pendant placement zone, neckline appropriate for pendant display, upper body positioning to showcase pendant drop area";
+      break;
+    case "anklets":
+      positioningRequirements = "Lower legs and ankles clearly visible, feet positioned naturally, ankle area well-lit and unobstructed, appropriate footwear or barefoot styling";
+      break;
+    default:
+      positioningRequirements = "Full upper body visible with clear jewelry placement areas, natural pose suitable for accessory display";
+  }
 
   try {
     const result = await fal.subscribe("fal-ai/imagen4/preview", {
       input: {
-        prompt: `CLEAN PORTRAIT: ${prompt}. 
+        prompt: `CONTEXT-AWARE PORTRAIT GENERATION: ${prompt}
 
-CRITICAL REQUIREMENT: The person must have ABSOLUTELY NO accessories of any kind - no necklaces, no earrings, no rings, no bracelets, no decorative items. Clean bare neck, clean bare ears, clean bare hands.
+JEWELRY CATEGORY OPTIMIZATION: ${jewelryCategory ? `Optimized for ${jewelryCategory} display` : 'General jewelry placement'}
 
-TECHNICAL SPECIFICATIONS: Canon EOS R5 + RF 85mm f/1.2L, ISO 100, f/2.8, 1/125s, studio strobes with softboxes, color temperature 5600K, shot at eye level.
+POSITIONING REQUIREMENTS: ${positioningRequirements}
 
-LIGHTING SETUP: Key light 45° camera right with 36" octagon softbox, fill light camera left at 1/2 power, hair light from behind-above with snoot, white seamless backdrop with gradient lighting from bottom.
+USER CONTEXT INTEGRATION: ${userContext ? `Following user preferences: ${userContext}` : 'Standard professional styling'}
 
-PERSON REQUIREMENTS: Professional portrait, age 20-35, clear porcelain skin, natural makeup with defined features, eyes looking directly at camera with confident expression, shoulders square to camera, head tilted 15° for dynamic pose.
+CRITICAL REQUIREMENTS: The person must have ABSOLUTELY NO accessories, jewelry, or decorative items of any kind - completely clean and bare in all jewelry placement areas.
 
-POSITIONING: Neck completely bare and clearly visible, ears fully exposed with hair styled back or to one side, décolletage area clean and well-lit, hands positioned elegantly if visible, perfect posture. ZERO accessories OR decorative items OF ANY KIND.
+TECHNICAL EXCELLENCE: Canon EOS R5 + RF 85mm f/1.2L, ISO 100, f/2.8, 1/125s, studio strobes with softboxes, color temperature 5600K, shot at eye level for professional quality.
 
-BACKGROUND & COMPOSITION: Pure white seamless background with subtle gradient, person centered in frame with breathing room, rule of thirds composition, negative space optimized.
+LIGHTING MASTERY: Key light 45° camera right with 36" octagon softbox, fill light camera left at 1/2 power, hair light from behind-above with snoot, white seamless backdrop with gradient lighting from bottom.
 
-POST-PRODUCTION QUALITY: Skin retouched to perfection while maintaining natural texture, eyes bright and sharp, hair with natural shine and volume, colors balanced, shadows soft but defined.
+SUBJECT SPECIFICATIONS: Professional portrait quality, natural makeup with defined features, eyes with confident expression and direct camera contact, natural skin texture with professional retouching.
 
-MANDATORY: No accessories, no necklaces, no earrings, no decorative items - completely clean portrait.`,
+COMPOSITION PERFECTION: Rule of thirds composition, negative space optimized for jewelry overlay, perfect posture with natural confidence, breathing room in frame, centered positioning.
+
+BACKGROUND & POST: Pure white seamless background with subtle gradient, colors balanced, shadows soft but defined, skin perfected while maintaining natural texture, eyes bright and sharp.
+
+MANDATORY EXCLUSIONS: Zero accessories, no jewelry, no decorative items, no hair accessories - completely clean portrait optimized for virtual jewelry try-on.`,
       },
       logs: true,
-      onQueueUpdate: (update: any) => {
+      onQueueUpdate: (update: {
+        status: string;
+        logs?: Array<{ message: string }>;
+      }) => {
         if (update.status === "IN_PROGRESS") {
           console.log("Model generation progress:", update.status);
           if (update.logs) {
-            update.logs.forEach((log: any) =>
+            update.logs.forEach((log) =>
               console.log("Model Log:", log.message)
             );
           }

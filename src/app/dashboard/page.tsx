@@ -16,6 +16,63 @@ export default function Dashboard() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [generationStatus, setGenerationStatus] = useState<string>("");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [jobHistory, setJobHistory] = useState<
+    Array<{
+      id: string;
+      status: string;
+      data?: { description?: string };
+      createdAt: string;
+      completedAt?: string;
+      result?: { generatedImageUrl?: string };
+    }>
+  >([]);
+
+  // Initialize session on component mount
+  useEffect(() => {
+    const initSession = async () => {
+      try {
+        // Check if we have a session in localStorage
+        let storedSessionId = localStorage.getItem("astra-session-id");
+
+        if (!storedSessionId) {
+          // Create new session
+          const response = await fetch("/api/sessions", {
+            method: "POST",
+          });
+
+          if (response.ok) {
+            const { sessionId: newSessionId } = await response.json();
+            storedSessionId = newSessionId;
+            localStorage.setItem("astra-session-id", newSessionId);
+          }
+        }
+
+        setSessionId(storedSessionId);
+        if (storedSessionId) {
+          loadSessionHistory(storedSessionId);
+        }
+      } catch (error) {
+        console.error("Error initializing session:", error);
+      }
+    };
+
+    if (isMounted) {
+      initSession();
+    }
+  }, [isMounted]);
+
+  const loadSessionHistory = async (sessionId: string) => {
+    try {
+      const response = await fetch(`/api/queue?sessionId=${sessionId}`);
+      if (response.ok) {
+        const { jobs } = await response.json();
+        setJobHistory(jobs || []);
+      }
+    } catch (error) {
+      console.error("Error loading session history:", error);
+    }
+  };
 
   const handleImageUpload = (
     file: File,
@@ -44,29 +101,28 @@ export default function Dashboard() {
   };
 
   const handleGenerate = async () => {
-    if (!prompt) return;
+    if (!prompt || !sessionId) return;
     setLoading(true);
-    setGenerationStatus("Analyzing request...");
+    setGenerationStatus("Adding to processing queue...");
 
     try {
-      const fullPrompt = sizingInfo
-        ? `${prompt}. Sizing requirements: ${sizingInfo}`
-        : prompt;
+      const modelImage = referenceImages.find(
+        (img) => img.type === "model"
+      )?.url;
+      const jewelryImage = referenceImages.find(
+        (img) => img.type === "jewelry"
+      )?.url;
 
       const generateData = {
-        prompt: fullPrompt,
-        referenceImages: referenceImages.map((img) => ({
-          url: img.url,
-          name: img.name,
-          type: img.type,
-        })),
-        sizingInfo: sizingInfo,
+        description: prompt,
+        modelImage,
+        jewelryImage,
+        sizing: sizingInfo ? parseFloat(sizingInfo) : undefined,
+        sessionId,
       };
 
-      console.log("Sending generation request:", generateData);
-      setGenerationStatus("Processing with AI...");
-
-      const response = await fetch("/api/process", {
+      // Submit to queue
+      const response = await fetch("/api/queue", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,28 +132,73 @@ export default function Dashboard() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Generation result:", result);
-
-        if (result.generatedImageUrl) {
-          setGeneratedImage(result.generatedImageUrl);
-          setGenerationStatus("");
-        } else {
-          console.error("No generated image URL in response");
-          setGenerationStatus("Generation failed - no image returned");
-        }
+        setGenerationStatus("Queued for processing...");
+        pollJobStatus(result.jobId);
+        // Refresh job history
+        loadSessionHistory(sessionId);
       } else {
         const error = await response.json();
-        console.error("Generation failed:", error);
-        setGenerationStatus(
-          `Generation failed: ${error.error || "Unknown error"}`
-        );
+        setGenerationStatus(`Failed to queue job: ${error.error}`);
+        setLoading(false);
       }
     } catch (error) {
-      console.error("Error during generation:", error);
-      setGenerationStatus("Generation failed - network error");
-    } finally {
+      console.error("Error queuing job:", error);
+      setGenerationStatus("Failed to queue job - network error");
       setLoading(false);
     }
+  };
+
+  const pollJobStatus = async (jobId: string) => {
+    let attempts = 0;
+    const maxAttempts = 120; // 10 minutes max
+
+    const poll = async () => {
+      try {
+        const response = await fetch(`/api/queue?id=${jobId}`);
+        if (response.ok) {
+          const job = await response.json();
+
+          switch (job.status) {
+            case "pending":
+              setGenerationStatus("Waiting in queue...");
+              break;
+            case "processing":
+              setGenerationStatus("Processing with AI...");
+              break;
+            case "completed":
+              if (job.result?.generatedImageUrl) {
+                setGeneratedImage(job.result.generatedImageUrl);
+                setGenerationStatus("");
+                setLoading(false);
+                // Refresh job history
+                if (sessionId) loadSessionHistory(sessionId);
+                return;
+              }
+              break;
+            case "failed":
+              setGenerationStatus(`Generation failed: ${job.error}`);
+              setLoading(false);
+              // Refresh job history
+              if (sessionId) loadSessionHistory(sessionId);
+              return;
+          }
+
+          attempts++;
+          if (attempts < maxAttempts) {
+            setTimeout(poll, 5000); // Poll every 5 seconds
+          } else {
+            setGenerationStatus("Timeout - job took too long");
+            setLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error("Error polling job:", error);
+        setGenerationStatus("Error checking job status");
+        setLoading(false);
+      }
+    };
+
+    poll();
   };
 
   const downloadImage = () => {
@@ -332,6 +433,71 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Job History */}
+        {jobHistory.length > 0 && (
+          <div className="mt-6 bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Recent Try-Ons
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">Your session history</p>
+            </div>
+            <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+              {jobHistory.slice(0, 10).map((job) => (
+                <div key={job.id} className="px-6 py-4 hover:bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            job.status === "completed"
+                              ? "bg-green-500"
+                              : job.status === "failed"
+                              ? "bg-red-500"
+                              : job.status === "processing"
+                              ? "bg-yellow-500"
+                              : "bg-gray-400"
+                          }`}
+                        ></div>
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {job.data?.description || "Untitled try-on"}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                        <span>
+                          {new Date(job.createdAt).toLocaleTimeString()}
+                        </span>
+                        <span className="capitalize">{job.status}</span>
+                        {job.completedAt && (
+                          <span>
+                            {Math.round(
+                              (new Date(job.completedAt).getTime() -
+                                new Date(job.createdAt).getTime()) /
+                                1000
+                            )}
+                            s
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {job.status === "completed" &&
+                      job.result?.generatedImageUrl && (
+                        <button
+                          onClick={() =>
+                            setGeneratedImage(job.result!.generatedImageUrl!)
+                          }
+                          className="ml-4 px-3 py-1.5 bg-violet-100 text-violet-700 rounded-lg text-xs hover:bg-violet-200 transition-colors"
+                        >
+                          View
+                        </button>
+                      )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Quick Tips */}
         <div className="mt-6 bg-gradient-to-r from-violet-50 to-indigo-50 rounded-xl p-4 border border-violet-200">
