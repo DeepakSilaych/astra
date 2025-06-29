@@ -28,26 +28,33 @@ export async function generateModelImage(
   let positioningRequirements = "";
   switch (jewelryCategory) {
     case "rings":
-      positioningRequirements = "Hands prominently displayed with elegant finger positioning, palms visible or gracefully posed, nail beds clean and well-manicured, fingers naturally separated to showcase ring placement areas";
+      positioningRequirements =
+        "Hands prominently displayed with elegant finger positioning, palms visible or gracefully posed, nail beds clean and well-manicured, fingers naturally separated to showcase ring placement areas";
       break;
     case "necklaces":
-      positioningRequirements = "Upper body and neck area clearly visible, décolletage well-lit, appropriate neckline for jewelry layering, shoulders positioned to frame the neck area naturally";
+      positioningRequirements =
+        "Upper body and neck area clearly visible, décolletage well-lit, appropriate neckline for jewelry layering, shoulders positioned to frame the neck area naturally";
       break;
     case "earrings":
-      positioningRequirements = "Face and ear areas clearly visible, hair styled to expose ears completely, head positioned to show ear shape and lobe clearly, profile and front angles optimized";
+      positioningRequirements =
+        "Face and ear areas clearly visible, hair styled to expose ears completely, head positioned to show ear shape and lobe clearly, profile and front angles optimized";
       break;
     case "bracelets":
     case "watches":
-      positioningRequirements = "Wrists and forearms clearly visible, arms positioned naturally with wrist areas prominently displayed, hands relaxed and elegant, sleeves appropriate for wrist exposure";
+      positioningRequirements =
+        "Wrists and forearms clearly visible, arms positioned naturally with wrist areas prominently displayed, hands relaxed and elegant, sleeves appropriate for wrist exposure";
       break;
     case "pendants":
-      positioningRequirements = "Chest area visible with clear pendant placement zone, neckline appropriate for pendant display, upper body positioning to showcase pendant drop area";
+      positioningRequirements =
+        "Chest area visible with clear pendant placement zone, neckline appropriate for pendant display, upper body positioning to showcase pendant drop area";
       break;
     case "anklets":
-      positioningRequirements = "Lower legs and ankles clearly visible, feet positioned naturally, ankle area well-lit and unobstructed, appropriate footwear or barefoot styling";
+      positioningRequirements =
+        "Lower legs and ankles clearly visible, feet positioned naturally, ankle area well-lit and unobstructed, appropriate footwear or barefoot styling";
       break;
     default:
-      positioningRequirements = "Full upper body visible with clear jewelry placement areas, natural pose suitable for accessory display";
+      positioningRequirements =
+        "Full upper body visible with clear jewelry placement areas, natural pose suitable for accessory display";
   }
 
   try {
@@ -55,11 +62,19 @@ export async function generateModelImage(
       input: {
         prompt: `CONTEXT-AWARE PORTRAIT GENERATION: ${prompt}
 
-JEWELRY CATEGORY OPTIMIZATION: ${jewelryCategory ? `Optimized for ${jewelryCategory} display` : 'General jewelry placement'}
+JEWELRY CATEGORY OPTIMIZATION: ${
+          jewelryCategory
+            ? `Optimized for ${jewelryCategory} display`
+            : "General jewelry placement"
+        }
 
 POSITIONING REQUIREMENTS: ${positioningRequirements}
 
-USER CONTEXT INTEGRATION: ${userContext ? `Following user preferences: ${userContext}` : 'Standard professional styling'}
+USER CONTEXT INTEGRATION: ${
+          userContext
+            ? `Following user preferences: ${userContext}`
+            : "Standard professional styling"
+        }
 
 CRITICAL REQUIREMENTS: The person must have ABSOLUTELY NO accessories, jewelry, or decorative items of any kind - completely clean and bare in all jewelry placement areas.
 
