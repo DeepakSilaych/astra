@@ -35,7 +35,7 @@ export async function uploadBase64Image(
 /**
  * Generate a unique filename for the scaled jewelry image
  */
-export function generateScaledImageFilename(originalUrl: string): string {
+export function generateScaledImageFilename(_originalUrl: string): string {
   const timestamp = Date.now();
   const randomId = Math.random().toString(36).substring(2, 15);
   return `scaled-jewelry-${timestamp}-${randomId}.png`;

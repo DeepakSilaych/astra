@@ -76,6 +76,13 @@ JEWELRY CATEGORY OPTIMIZATION: ${jewelryCategory ? `Optimized for ${jewelryCateg
 
 POSITIONING REQUIREMENTS: ${positioningRequirements}
 
+FRAME COMPOSITION: ${frameComposition}
+
+BODY FOCUS: ${bodyFocus}
+FRAME COMPOSITION: ${frameComposition}
+
+BODY FOCUS: ${bodyFocus}
+
 USER CONTEXT INTEGRATION: ${userContext ? `Following user preferences: ${userContext}` : 'Standard professional styling'}
 
 CRITICAL REQUIREMENTS: The person must have ABSOLUTELY NO accessories, jewelry, or decorative items of any kind - completely clean and bare in all jewelry placement areas.

@@ -3,8 +3,8 @@ import * as fal from "@fal-ai/serverless-client";
 type GenerateFinalImageInput = {
   modelImageUrl: string;
   jewelryImageUrl: string;
-  prompt: string;
-  sizingInfo: string;
+  _prompt: string;
+  _sizingInfo: string;
   jewelryCategory?: string;
   userContext?: string;
 };
@@ -18,8 +18,8 @@ fal.config({
 export async function generateFinalImage({
   modelImageUrl,
   jewelryImageUrl,
-  prompt,
-  sizingInfo,
+  _prompt,
+  _sizingInfo,
   jewelryCategory,
   userContext,
 }: GenerateFinalImageInput): Promise<string> {
