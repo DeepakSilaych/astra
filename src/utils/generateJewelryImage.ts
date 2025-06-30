@@ -28,28 +28,36 @@ export async function generateJewelryImage(
   let categorySpecs = "";
   switch (jewelryCategory) {
     case "rings":
-      categorySpecs = "Ring photography: Optimal angles to show band width, setting details, stone placement, ring size proportions, side profile for thickness, top view for stone arrangement, macro detail for texture and engravings";
+      categorySpecs =
+        "Ring photography: Optimal angles to show band width, setting details, stone placement, ring size proportions, side profile for thickness, top view for stone arrangement, macro detail for texture and engravings";
       break;
     case "necklaces":
-      categorySpecs = "Necklace photography: Chain drape and flow, clasp detail, length proportions, layering compatibility, pendant interaction if applicable, chain link definition, overall silhouette";
+      categorySpecs =
+        "Necklace photography: Chain drape and flow, clasp detail, length proportions, layering compatibility, pendant interaction if applicable, chain link definition, overall silhouette";
       break;
     case "earrings":
-      categorySpecs = "Earring photography: Pair symmetry, post and back detail, dangle movement and weight, size scale reference, front and profile angles, material finish and texture, closure mechanism detail";
+      categorySpecs =
+        "Earring photography: Pair symmetry, post and back detail, dangle movement and weight, size scale reference, front and profile angles, material finish and texture, closure mechanism detail";
       break;
     case "bracelets":
-      categorySpecs = "Bracelet photography: Circumference and fit indication, clasp mechanism detail, link or bead spacing, flexibility demonstration, width and thickness, stacking compatibility, comfort features";
+      categorySpecs =
+        "Bracelet photography: Circumference and fit indication, clasp mechanism detail, link or bead spacing, flexibility demonstration, width and thickness, stacking compatibility, comfort features";
       break;
     case "watches":
-      categorySpecs = "Watch photography: Face legibility, crown and button detail, band/strap texture and width, case thickness and lugs, movement visibility if applicable, water resistance indicators, brand markings";
+      categorySpecs =
+        "Watch photography: Face legibility, crown and button detail, band/strap texture and width, case thickness and lugs, movement visibility if applicable, water resistance indicators, brand markings";
       break;
     case "pendants":
-      categorySpecs = "Pendant photography: Pendant proportions and weight indication, bail detail and chain compatibility, symbolic or design element clarity, dimensional depth, surface texture and finish";
+      categorySpecs =
+        "Pendant photography: Pendant proportions and weight indication, bail detail and chain compatibility, symbolic or design element clarity, dimensional depth, surface texture and finish";
       break;
     case "anklets":
-      categorySpecs = "Anklet photography: Delicate chain structure, sizing and adjustment features, charm or bead detail, lightweight appearance, closure mechanism, comfortable wear indication";
+      categorySpecs =
+        "Anklet photography: Delicate chain structure, sizing and adjustment features, charm or bead detail, lightweight appearance, closure mechanism, comfortable wear indication";
       break;
     default:
-      categorySpecs = "General jewelry photography: All design elements clearly visible, scale and proportion accurate, material quality apparent, craftsmanship details highlighted";
+      categorySpecs =
+        "General jewelry photography: All design elements clearly visible, scale and proportion accurate, material quality apparent, craftsmanship details highlighted";
   }
 
   try {
@@ -59,7 +67,11 @@ export async function generateJewelryImage(
 
 CATEGORY SPECIALIZATION: ${categorySpecs}
 
-USER CONTEXT INTEGRATION: ${userContext ? `Reflecting user specifications: ${userContext}` : 'Standard luxury presentation'}
+USER CONTEXT INTEGRATION: ${
+          userContext
+            ? `Reflecting user specifications: ${userContext}`
+            : "Standard luxury presentation"
+        }
 
 TECHNICAL MASTERY: Canon EOS R5 + Canon RF 100mm f/2.8L Macro IS USM, ISO 100, f/8, 1/60s, focus stacking for maximum depth of field, tethered shooting for precision control and consistency.
 

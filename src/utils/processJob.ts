@@ -75,8 +75,10 @@ export async function processJobData(data: JobData): Promise<JobResult> {
       const finalImageUrl = await generateFinalImage({
         modelImageUrl,
         jewelryImageUrl,
-        prompt: "Virtual jewelry try-on",
+        prompt: analysis.suggestedModelPrompt || "Virtual jewelry try-on",
         sizingInfo: data.sizing ? `Size: ${data.sizing}` : "Standard sizing",
+        jewelryCategory: analysis.jewelryCategory,
+        userContext: data.description,
       });
       console.log("Generated final image URL:", finalImageUrl);
 

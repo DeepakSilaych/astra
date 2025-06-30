@@ -145,6 +145,8 @@ export async function POST(req: NextRequest) {
         jewelryImageUrl,
         prompt,
         sizingInfo,
+        jewelryCategory: analysis.jewelryCategory,
+        userContext: prompt,
       });
 
       // Return the results

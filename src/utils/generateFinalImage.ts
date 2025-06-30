@@ -5,6 +5,8 @@ type GenerateFinalImageInput = {
   jewelryImageUrl: string;
   prompt: string;
   sizingInfo: string;
+  jewelryCategory?: string;
+  userContext?: string;
 };
 
 // The 'fal' client is initialized outside of the function
@@ -18,13 +20,55 @@ export async function generateFinalImage({
   jewelryImageUrl,
   prompt,
   sizingInfo,
+  jewelryCategory,
+  userContext,
 }: GenerateFinalImageInput): Promise<string> {
-  console.log("Starting final image generation with inputs:", {
-    modelImageUrl,
-    jewelryImageUrl,
-    prompt,
-    sizingInfo,
-  });
+
+  // Create category-specific prompt
+  let categoryPrompt = "person wearing jewelry";
+
+  if (jewelryCategory) {
+    switch (jewelryCategory) {
+      case "rings":
+        categoryPrompt =
+          "person wearing a ring on their finger, ring properly sized and positioned on finger, natural hand pose showcasing the ring";
+        break;
+      case "necklaces":
+        categoryPrompt =
+          "person wearing a necklace around their neck, necklace properly draped around neck at appropriate length";
+        break;
+      case "earrings":
+        categoryPrompt =
+          "person wearing earrings, earrings properly positioned on earlobes, ears clearly visible";
+        break;
+      case "bracelets":
+        categoryPrompt =
+          "person wearing a bracelet on their wrist, bracelet properly fitted around wrist";
+        break;
+      case "watches":
+        categoryPrompt =
+          "person wearing a watch on their wrist, watch properly positioned on wrist with face visible";
+        break;
+      case "pendants":
+        categoryPrompt =
+          "person wearing a pendant necklace, pendant properly positioned on chest area";
+        break;
+      case "anklets":
+        categoryPrompt =
+          "person wearing an anklet around their ankle, anklet properly fitted around ankle";
+        break;
+      default:
+        categoryPrompt = "person wearing jewelry";
+    }
+  }
+
+  // Incorporate user context if available
+  const finalPrompt = userContext
+    ? `${categoryPrompt}, incorporating user preferences: ${userContext}`
+    : categoryPrompt;
+
+
+  console.log("Final prompt for image generation:", finalPrompt);
 
   try {
     // Use Replicate API directly for better control
@@ -39,7 +83,7 @@ export async function generateFinalImage({
           "8f8d84ebe012e94a126b21c953b8dc33be86e4cf92b133b144bda94aa84e616b",
         input: {
           seed: Math.floor(Math.random() * 10000000000000000),
-          prompt: "person wearing jewelry",
+          prompt: finalPrompt,
           ref_task1: "id",
           ref_image1: modelImageUrl,
           ref_image2: jewelryImageUrl,

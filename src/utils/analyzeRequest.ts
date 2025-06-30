@@ -71,7 +71,7 @@ export async function analyzeRequest(
   
   UTILIZE USER'S EXACT LANGUAGE: Incorporate the user's specific terminology, brand mentions, style descriptors, and emotional language throughout all generated prompts.
   
-  Respond with JSON in this exact format:
+  Respond with JSON ONLY in this exact format:
   {
     "needsModelGeneration": boolean,
     "needsJewelryGeneration": boolean,
@@ -116,12 +116,7 @@ PROMPT GENERATION PRINCIPLES:
 - DEMOGRAPHIC SENSITIVITY: Respectfully incorporate user's demographic preferences when specified
 - TECHNICAL ACCURACY: Ensure jewelry descriptions are technically accurate and feasible
 - AESTHETIC COHERENCE: Create prompts that result in cohesive, professional-quality images
-
-OUTPUT REQUIREMENTS:
-- Always respond with valid JSON
-- Provide detailed reasoning that demonstrates understanding of user context
-- Generate prompts that are specific enough to produce high-quality, relevant images
-- Ensure all recommendations align with virtual try-on best practices`,
+`
       },
       {
         role: "user",
